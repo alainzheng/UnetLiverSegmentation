@@ -694,3 +694,65 @@ def compute_sensitivity_specificity(mask_gt, mask_pred):
   
 
   return sens, spec
+
+def compute_sensitivity_specificity(mask_gt, mask_pred):
+    
+  """
+    sensitivity: True Positive Rate is defined as TP/ (FN+TP)
+    specificity: False Positive Rate is defined as TN / (FP+TN)
+    
+  """
+  setLen = mask_pred.shape[0]
+  
+  imarea = mask_pred.shape[1]*mask_pred.shape[2]
+  
+  sens = 0
+  
+  spec = 0
+  
+  for i in range(setLen):
+
+    TP = (mask_gt[i].astype(np.bool) & mask_pred[i].astype(np.bool)).sum()
+        
+    TN = imarea - (mask_gt[i].astype(np.bool) | mask_pred[i].astype(np.bool)).sum()
+        
+    FN = mask_gt[i].sum() - TP
+    
+    FP = mask_pred[i].sum() - TP
+    
+    if FN+TP != 0:
+      sens += TP/(FN+TP)
+    if FP+TN != 0:
+      spec += TN/(FP+TN)
+  
+  sens /= setLen
+  
+  spec /= setLen
+  
+
+  return sens, spec
+
+def compute_IOU(mask_gt, mask_pred):
+    
+  """
+    compute interval over union metric
+    
+  """
+  setLen = mask_pred.shape[0]
+    
+  iou = 0
+  
+  for i in range(setLen):
+
+    interval = (mask_gt[i].astype(np.bool) & mask_pred[i].astype(np.bool)).sum()
+        
+    union = (mask_gt[i].astype(np.bool) | mask_pred[i].astype(np.bool)).sum()
+        
+
+    
+    if union != 0:
+      iou += interval/union
+
+  iou /= setLen
+
+  return iou

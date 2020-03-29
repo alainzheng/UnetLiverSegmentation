@@ -334,6 +334,29 @@ def get_ROC_curve(masks, unet_mask):
     #plt.savefig('ROC')
 
 
+
+def get_iou(masks, unet_mask):
+	#surface distance -> used to compare outlines
+    print('-'*30)
+	
+    print('Compute iou...')
+	
+    print('-'*30)    
+    
+    threshold = 0.88  #chosen for best dice coefficient
+	
+    unet_mask[unet_mask<=threshold] = 0
+	
+    unet_mask[unet_mask>threshold] = 1
+	
+	
+    iou = metrics.compute_IOU(masks.astype(np.bool), unet_mask.astype(np.bool))
+	
+    
+    print('Interval over union : ' + str(iou))
+	
+
+
 if __name__ == '__main__':
     
     ##############################################
@@ -436,3 +459,6 @@ if __name__ == '__main__':
     ################ get ROC curve ###################################
     ################ STILL NEED SOME ADAPTATION#################
     #get_ROC_curve(masks, unet_mask)
+
+    ################ get Interval over union ###################
+    get_iou(masks,unet_mask)
